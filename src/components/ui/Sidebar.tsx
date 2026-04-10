@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useState, useEffect } from "react";
 import type { AppUser } from "@/types";
 import { MODULE_ACCESS, ROLE_LABELS } from "@/types";
 
@@ -23,21 +24,59 @@ interface SidebarProps { user: AppUser; }
 export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const allowed = MODULE_ACCESS[user.role] ?? [];
-  const nav = ALL_NAV; // QUICK FIX: Show all links for now
-  
-  console.log("USER:", user);
-  console.log("ALLOWED:", allowed);
-  console.log("NAV:", nav);
+  const nav = ALL_NAV;
+  const [isOpen, setIsOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   return (
-    <aside style={{
-      width: 240,
-      background: "#0f172a",
-      color: "#fff",
-      borderRight: "1px solid #1e293b",
-      display: "flex",
-      flexDirection: "column",
-    }}>
+    <>
+      {/* Mobile Menu Button */}
+      {isMobile && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          style={{
+            position: "absolute",
+            top: "16px",
+            left: "16px",
+            background: "#22c55e",
+            border: "none",
+            color: "#fff",
+            padding: "8px 12px",
+            borderRadius: "5px",
+            cursor: "pointer",
+            fontSize: "18px",
+            zIndex: 51,
+          }}
+        >
+          {isOpen ? "✕" : "☰"}
+        </button>
+      )}
+
+      {/* Sidebar */}
+      <aside
+        style={{
+          width: isMobile ? (isOpen ? 240 : 0) : 240,
+          background: "#0f172a",
+          color: "#fff",
+          borderRight: "1px solid #1e293b",
+          display: "flex",
+          flexDirection: "column",
+          position: isMobile ? "fixed" : "relative",
+          height: isMobile ? "100vh" : "auto",
+          top: 0,
+          left: 0,
+          zIndex: 50,
+          transition: isMobile ? "width 0.3s ease" : "none",
+          overflow: isMobile ? "hidden" : "auto",
+        }}
+      >
       {/* Brand */}
       <div style={{
         padding: "20px 16px",
@@ -117,5 +156,19 @@ export default function Sidebar({ user }: SidebarProps) {
         </form>
       </div>
     </aside>
+
+    {/* Mobile Overlay */}
+    {isMobile && isOpen && (
+      <div
+        onClick={() => setIsOpen(false)}
+        style={{
+          position: "fixed",
+          inset: 0,
+          background: "rgba(0, 0, 0, 0.5)",
+          zIndex: 40,
+        }}
+      />
+    )}
+    </>
   );
 }

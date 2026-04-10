@@ -2,30 +2,39 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/lib/supabase/client";
 import toast from "react-hot-toast";
 
 export default function LoginPage() {
   const router = useRouter();
-  const supabase = createClient();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const dummyUsers = [
+    { email: "admin@makamilfarma.com", password: "admin123" },]
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      toast.error(error.message);
+    // Check if email and password match any user in dummyUsers
+    const user = dummyUsers.find(u => u.email === email && u.password === password);
+    
+    if (!user) {
+      toast.error("❌ Invalid email or password");
       setLoading(false);
       return;
     }
 
-    router.push("/dashboard");
-    router.refresh();
+    // Valid credentials - proceed with login
+    setTimeout(() => {
+      // Store authentication in localStorage
+      localStorage.setItem("isLoggedIn", "true");
+      localStorage.setItem("userEmail", user.email);
+      toast.success("✅ Login successful! Welcome to Pharma DMS");
+      router.push("/dashboard");
+      router.refresh();
+    }, 500);
   };
 
   return (
@@ -123,7 +132,11 @@ export default function LoginPage() {
             borderTop: "1px solid var(--border)",
             fontSize: 11, color: "var(--muted)", textAlign: "center",
           }}>
-            Contact your system administrator to request access or reset your password.
+            <div style={{ marginBottom: 8 }}>Demo Credentials:</div>
+            <div style={{ fontFamily: "monospace", fontSize: 10 }}>
+              <div>Email: <span style={{ color: "#22c55e" }}>admin@makamilfarma.com</span></div>
+              <div>Password: <span style={{ color: "#22c55e" }}>admin123</span></div>
+            </div>
           </div>
         </div>
 

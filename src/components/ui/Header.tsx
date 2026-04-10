@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import type { AppUser, Notification } from "@/types";
 import { ROLE_LABELS, CAN_APPROVE } from "@/types";
 import { Bell } from "lucide-react";
@@ -8,9 +10,19 @@ import { Bell } from "lucide-react";
 interface HeaderProps { user: AppUser; }
 
 export default function Header({ user }: HeaderProps) {
+  const router = useRouter();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const canSeeApprovals = CAN_APPROVE.includes(user.role);
+
+  const handleLogout = () => {
+    // Clear authentication from localStorage
+    localStorage.removeItem("isLoggedIn");
+    localStorage.removeItem("userEmail");
+    toast.success("✅ Logged out successfully");
+    router.push("/login");
+    router.refresh();
+  };
 
   const fetchNotifications = useCallback(async () => {
     if (!canSeeApprovals) return;
@@ -121,6 +133,27 @@ export default function Header({ user }: HeaderProps) {
         }}>
           {ROLE_LABELS[user.role]}
         </span>
+
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          style={{
+            fontSize: 11, padding: "5px 12px", borderRadius: 4,
+            background: "rgba(239,68,68,0.1)", color: "#ef4444",
+            border: "1px solid rgba(239,68,68,0.2)", cursor: "pointer",
+            fontWeight: 600, transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => {
+            e.currentTarget.style.background = "rgba(239,68,68,0.2)";
+            e.currentTarget.style.borderColor = "rgba(239,68,68,0.4)";
+          }}
+          onMouseLeave={(e) => {
+            e.currentTarget.style.background = "rgba(239,68,68,0.1)";
+            e.currentTarget.style.borderColor = "rgba(239,68,68,0.2)";
+          }}
+        >
+          Logout
+        </button>
       </div>
     </header>
   );
