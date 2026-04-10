@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:      #070b12;
+  --card:    #0c1220;
+  --card2:   #111827;
+  --border:  #172035;
+  --border2: #1f3050;
+  --text:    #c8d8e8;
+  --muted:   #4e6a8a;
+  --accent:  #1f9b55;
+  --blue:    #3d8ef7;
+  --amber:   #c9991a;
+  --red:     #d94040;
+  --purple:  #9c6ff0;
+  --teal:    #1ab3c0;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  background:  var(--bg);
+  color:       var(--text);
+  font-family: "Trebuchet MS", Tahoma, Geneva, sans-serif;
+  font-size:   14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted); }
+
+/* Focus ring */
+*:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+/* Table defaults */
+table { border-collapse: collapse; width: 100%; }
+
+/* Input resets */
+input, select, textarea, button { font-family: inherit; }
+
+/* Print */
+@media print {
+  body { background: #fff; color: #000; }
+  .no-print { display: none !important; }
+}
