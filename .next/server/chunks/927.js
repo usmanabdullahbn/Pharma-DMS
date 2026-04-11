@@ -1,0 +1,1 @@
+"use strict";exports.id=927,exports.ids=[927],exports.modules={6927:(t,r,e)=>{e.d(r,{ProductionClient:()=>i});var o=e(8570);let s=(0,o.createProxy)(String.raw`E:\pharma-dms\src\components\modules\ProductionClient.tsx`),{__esModule:n,$$typeof:d}=s;s.default;let i=(0,o.createProxy)(String.raw`E:\pharma-dms\src\components\modules\ProductionClient.tsx#ProductionClient`)}};

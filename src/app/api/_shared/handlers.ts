@@ -41,7 +41,7 @@ export async function POST_QC(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const qcNo = `QC-${year}${String((qcRecords.length + 1).padStart(4, "0"))}`;
+  const qcNo = `QC-${year}${String(qcRecords.length + 1).padStart(4, "0")}`;
   const conclusion = body.tests?.every((t: Record<string, string>) => t.verdict === "pass") ? "pass" : "fail";
 
   const record = {
@@ -52,14 +52,13 @@ export async function POST_QC(req: NextRequest) {
     test_date: body.testDate,
     analyst_name: body.analystName,
     analyst_id: user.id,
-    conclusion,
-    status: "submitted",
+    conclusion: conclusion as any,
+    status: "submitted" as const,
     submitted_by: user.id,
-    approved_by: null,
-    approval_date: null,
     is_locked: false,
     created_by: user.id,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   qcRecords.push(record);
