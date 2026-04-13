@@ -56,11 +56,14 @@ export async function POST_QC(req: NextRequest) {
     status: "submitted" as const,
     submitted_by: user.id,
     submitted_at: new Date().toISOString(),
+    approved_by: undefined as any,
+    approved_at: undefined as any,
+    approval_comment: undefined as any,
     is_locked: false,
     created_by: user.id,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  } as const;
+  };
 
   qcRecords.push(record);
 
