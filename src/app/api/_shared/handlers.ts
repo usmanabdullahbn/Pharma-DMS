@@ -52,20 +52,15 @@ export async function POST_QC(req: NextRequest) {
     test_date: body.testDate,
     analyst_name: body.analystName,
     analyst_id: user.id,
-    supervisor_name: undefined,
-    supervisor_id: undefined,
     conclusion: conclusion as any,
     status: "submitted" as const,
     submitted_by: user.id,
     submitted_at: new Date().toISOString(),
-    approved_by: undefined,
-    approved_at: undefined,
-    approval_comment: undefined,
     is_locked: false,
     created_by: user.id,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
-  };
+  } as const;
 
   qcRecords.push(record);
 
