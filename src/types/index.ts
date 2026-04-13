@@ -216,6 +216,8 @@ export interface QCRecord {
   supervisor_id?: string;
   conclusion: QCVerdict;
   status: ApprovalStatus;
+  submitted_by?: string;
+  submitted_at?: string;
   approved_by?: string;
   approved_at?: string;
   approval_comment?: string;
