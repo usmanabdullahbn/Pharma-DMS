@@ -211,13 +211,13 @@ export interface QCRecord {
   test_type: QCTestType;
   test_date: string;
   analyst_name: string;
-  analyst_id?: string;
+  analyst_id: string;
   supervisor_name?: string;
   supervisor_id?: string;
   conclusion: QCVerdict;
   status: ApprovalStatus;
-  submitted_by?: string;
-  submitted_at?: string;
+  submitted_by: string;
+  submitted_at: string;
   approved_by?: string;
   approved_at?: string;
   approval_comment?: string;
@@ -415,8 +415,8 @@ export interface AuditLog {
   entity_type: string;
   entity_id: string;
   entity_display?: string;
-  old_values?: Record<string, unknown>;
-  new_values?: Record<string, unknown>;
+  old_values?: Record<string, any> | null;
+  new_values?: Record<string, any> | null;
   ip_address?: string;
   user_agent?: string;
   created_at: string;

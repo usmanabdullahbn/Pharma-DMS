@@ -114,7 +114,7 @@ export function BMRClient({ user, records: initial, batches }: BMRProps) {
             <div key={i} style={{ display: "flex", alignItems: "center", gap: 10, padding: "9px 12px", borderRadius: 5, background: "#0a1220", border: "1px solid var(--border)", marginBottom: 4 }}>
               <span style={{ color: sec.is_completed ? "var(--accent)" : "var(--border2)", fontSize: 14, width: 16, flexShrink: 0 }}>{sec.is_completed ? "✓" : "○"}</span>
               <span style={{ fontSize: 13, color: sec.is_completed ? "var(--text)" : "var(--muted)" }}>{sec.section_title as string}</span>
-              {sec.is_completed && <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--muted)" }}>Completed</span>}
+              {(sec.is_completed as boolean) && <span style={{ marginLeft: "auto", fontSize: 10, color: "var(--muted)" }}>Completed</span>}
             </div>
           ))}
         </Modal>

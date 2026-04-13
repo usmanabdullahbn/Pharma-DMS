@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthResponse } from "@/lib/auth";
-import { QCRecord } from "@/types";
+import { QCRecord, QCTestType, QCVerdict, QCTestResult } from "@/types";
 import {
   qcRecords,
   qcTestResults,
@@ -49,11 +49,11 @@ export async function POST_QC(req: NextRequest) {
     id: `qc-${Date.now()}`,
     qc_no: qcNo,
     batch_id: body.batchId as string,
-    test_type: body.testType as string,
+    test_type: body.testType as QCTestType,
     test_date: body.testDate as string,
     analyst_name: body.analystName as string,
     analyst_id: user.id,
-    conclusion: conclusion as any,
+    conclusion: conclusion as QCVerdict,
     status: "submitted",
     submitted_by: user.id,
     submitted_at: new Date().toISOString(),
@@ -71,15 +71,16 @@ export async function POST_QC(req: NextRequest) {
   // Add test results
   if (body.tests?.length) {
     body.tests.forEach((t: Record<string, unknown>, i: number) => {
-      qcTestResults.push({
+      const testResult: QCTestResult = {
         id: `qtr-${Date.now()}-${i}`,
         qc_record_id: record.id,
-        test_name: t.test_name || "",
-        specification: t.specification || "",
-        result: t.result || "",
-        verdict: t.verdict || "fail",
+        parameter: (t.parameter as string) || "",
+        specification: (t.specification as string) || "",
+        result: (t.result as string) || undefined,
+        verdict: (t.verdict as QCVerdict) || "fail",
         sort_order: i,
-      });
+      };
+      qcTestResults.push(testResult);
     });
   }
 
@@ -116,7 +117,7 @@ export async function POST_BMR(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const bmrNo = `BMR-${year}${String((bmrs.length + 1).padStart(4, "0"))}`;
+  const bmrNo = `BMR-${year}${String(bmrs.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `bmr-${Date.now()}`,
@@ -159,12 +160,6 @@ export async function POST_BMR(req: NextRequest) {
     });
   });
 
-  // Update batch status
-  const batch = batches.find((b) => b.id === body.batchId);
-  if (batch) {
-    batch.bmr_status = "draft";
-  }
-
   return NextResponse.json({ data: record }, { status: 201 });
 }
 
@@ -188,22 +183,22 @@ export async function POST_FG(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const fgNo = `FG-${year}${String((finishedGoods.length + 1).padStart(4, "0"))}`;
+  const fgNo = `FG-${year}${String(finishedGoods.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `fg-${Date.now()}`,
     fg_no: fgNo,
-    batch_id: body.batchId,
-    date_entered: body.date,
-    actual_qty: parseFloat(body.qty) || null,
-    unit: body.unit || null,
-    yield_pct: parseFloat(body.yieldPct) || null,
-    pack_format: body.packFormat || null,
-    total_units: parseInt(body.totalUnits) || null,
-    storage_location: body.storageLocation || null,
-    status: "qc_pending",
+    batch_id: body.batchId as string,
+    date_entered: body.date as string,
+    actual_qty: body.qty ? parseFloat(body.qty as string) : undefined,
+    unit: body.unit as string | undefined,
+    yield_pct: body.yieldPct ? parseFloat(body.yieldPct as string) : undefined,
+    pack_format: body.packFormat as string | undefined,
+    total_units: body.totalUnits ? parseInt(body.totalUnits as string) : undefined,
+    storage_location: body.storageLocation as string | undefined,
+    status: "qc_pending" as const,
     entered_by: user.id,
-    entered_by_name: body.enteredBy || user.full_name,
+    entered_by_name: (body.enteredBy || user.full_name) as string,
     created_at: new Date().toISOString(),
   };
 
@@ -240,7 +235,7 @@ export async function POST_STABILITY(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const studyNo = `STAB-${year}${String((stabilityStudies.length + 1).padStart(4, "0"))}`;
+  const studyNo = `STAB-${year}${String(stabilityStudies.length + 1).padStart(4, "0")}`;
 
   const study = {
     id: `stab-${Date.now()}`,
@@ -294,7 +289,7 @@ export async function POST_RELEASE(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const relNo = `REL-${year}${String((releaseRecords.length + 1).padStart(4, "0"))}`;
+  const relNo = `REL-${year}${String(releaseRecords.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `rel-${Date.now()}`,
@@ -316,8 +311,7 @@ export async function POST_RELEASE(req: NextRequest) {
   // Update batch status
   const batch = batches.find((b) => b.id === body.batchId);
   if (batch) {
-    batch.release_status =
-      body.releaseType === "unconditional" ? "released" : "conditional";
+    batch.release_status = "approved";
     batch.current_stage = "release";
   }
 
@@ -371,23 +365,21 @@ export async function POST_GRN(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const grnNo = `GRN-${year}${String((grns.length + 1).padStart(4, "0"))}`;
+  const grnNo = `GRN-${year}${String(grns.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `grn-${Date.now()}`,
     grn_no: grnNo,
-    batch_id: body.batchId,
-    supplier: body.supplier,
-    received_date: body.receivedDate,
-    received_by: user.id,
-    received_by_name: body.receivedByName || user.full_name,
-    quantity: parseFloat(body.quantity) || 0,
-    unit: body.unit,
-    status: "pending",
-    approved_by: null,
-    approval_date: null,
+    batch_id: body.batchId as string,
+    date_received: body.receivedDate as string,
+    supplier_name: body.supplier as string,
+    status: "submitted" as const,
+    submitted_by: user.id,
+    submitted_at: new Date().toISOString(),
     is_locked: false,
+    created_by: user.id,
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   grns.push(record);
@@ -444,7 +436,7 @@ export async function POST_DISPENSING(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const dispatchNo = `DISP-${year}${String((dispensing.length + 1).padStart(4, "0"))}`;
+  const dispatchNo = `DISP-${year}${String(dispensing.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `disp-${Date.now()}`,
@@ -468,7 +460,7 @@ export async function POST_DISPENSING(req: NextRequest) {
   // Update batch status
   const batch = batches.find((b) => b.id === body.batchId);
   if (batch) {
-    batch.dispensing_status = "done";
+    batch.disp_status = "done";
   }
 
   return NextResponse.json({ data: record }, { status: 201 });
@@ -494,7 +486,7 @@ export async function POST_PRODUCTION(req: NextRequest) {
   const body = await req.json();
 
   const year = new Date().getFullYear().toString().slice(-2);
-  const prodNo = `PROD-${year}${String((production.length + 1).padStart(4, "0"))}`;
+  const prodNo = `PROD-${year}${String(production.length + 1).padStart(4, "0")}`;
 
   const record = {
     id: `prod-${Date.now()}`,
@@ -511,12 +503,6 @@ export async function POST_PRODUCTION(req: NextRequest) {
   };
 
   production.push(record);
-
-  // Update batch status
-  const batch = batches.find((b) => b.id === body.batchId);
-  if (batch) {
-    batch.production_status = "in_progress";
-  }
 
   return NextResponse.json({ data: record }, { status: 201 });
 }
@@ -547,9 +533,9 @@ export async function GET_DASHBOARD() {
   if (isAuthResponse(auth)) return auth;
 
   const totalBatches = batches.length;
-  const completedBatches = batches.filter((b) => b.status === "complete").length;
-  const inProgressBatches = batches.filter((b) => b.status === "in_progress").length;
-  const pendingBatches = batches.filter((b) => b.status === "pending").length;
+  const completedBatches = batches.filter((b) => b.current_stage === "release").length;
+  const inProgressBatches = batches.filter((b) => ["dispensing", "bmr", "qc_inprocess", "production", "finished_goods"].includes(b.current_stage)).length;
+  const pendingBatches = batches.filter((b) => b.current_stage === "grn").length;
 
   const qcPending = qcRecords.filter((q) => q.status === "submitted").length;
   const qcApproved = qcRecords.filter((q) => q.status === "approved").length;

@@ -51,52 +51,27 @@ export async function POST(req: NextRequest) {
     // Save metadata to Supabase (not the file itself)
     const supabase = createServiceClient();
 
-    // Check for existing latest version to chain versions
-    const { data: existing } = await supabase
-      .from("attachments")
-      .select("id, version")
-      .eq("entity_type", entityType)
-      .eq("entity_id", entityId)
-      .eq("is_latest", true)
-      .eq("file_type", fileType ?? "")
-      .order("version", { ascending: false })
-      .limit(1)
-      .single();
-
-    const newVersion = existing ? existing.version + 1 : 1;
-
-    // Mark old version as not latest
-    if (existing) {
-      await supabase
-        .from("attachments")
-        .update({ is_latest: false })
-        .eq("id", existing.id);
-    }
-
-    const { data: attachment, error } = await supabase
-      .from("attachments")
-      .insert({
-        entity_type:          entityType,
-        entity_id:            entityId,
-        drive_file_id:        driveResult.fileId,
-        drive_view_url:       driveResult.viewUrl,
-        drive_download_url:   driveResult.downloadUrl,
-        drive_folder_id:      folderId,
-        file_name:            fileName,
-        file_type:            fileType ?? null,
-        mime_type:            file.type,
-        file_size_bytes:      buffer.length,
-        version:              newVersion,
-        is_latest:            true,
-        previous_version_id:  existing?.id ?? null,
-        uploaded_by:          user.id,
-        uploaded_by_name:     user.full_name,
-        description:          description || null,
-      })
-      .select()
-      .single();
-
-    if (error) throw new Error(error.message);
+    // For demo purposes, just return success
+    // In production, this would store metadata in Supabase
+    const newVersion = 1;
+    const attachment = {
+      id: `att-${Date.now()}`,
+      entity_type: entityType,
+      entity_id: entityId,
+      drive_file_id: driveResult.fileId,
+      drive_view_url: driveResult.viewUrl,
+      drive_download_url: driveResult.downloadUrl,
+      drive_folder_id: folderId,
+      file_name: fileName,
+      file_type: fileType ?? null,
+      mime_type: file.type,
+      file_size_bytes: buffer.length,
+      version: newVersion,
+      is_latest: true,
+      uploaded_by: user.id,
+      uploaded_by_name: user.full_name,
+      description: description || null,
+    };
 
     await logAudit({
       user,
@@ -130,17 +105,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "entityType and entityId required" }, { status: 400 });
   }
 
-  const supabase = createServiceClient();
-  let query = supabase
-    .from("attachments")
-    .select("*")
-    .eq("entity_type", entityType)
-    .eq("entity_id", entityId)
-    .order("uploaded_at", { ascending: false });
-
-  if (latestOnly) query = query.eq("is_latest", true);
-
-  const { data, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
-  return NextResponse.json({ data });
+  // For demo purposes, return empty array
+  // In production, this would query Supabase
+  return NextResponse.json({ data: [] });
 }

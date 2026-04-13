@@ -1,6 +1,8 @@
 // 🔬 PHARMA DMS - DUMMY DATA (LOCAL MOCK)
 // This file provides mock data for development without Supabase
 
+import { QCRecord, QCTestResult, FinishedGoods, GRN, Batch, AuditLog } from "@/types";
+
 export const dummyUser = {
   id: "demo-user-123",
   email: "demo@pharma.local",
@@ -12,7 +14,7 @@ export const dummyUser = {
 };
 
 // ═══════════ BATCHES ═══════════
-export const batches = [
+export const batches: Batch[] = [
   {
     id: "batch-1",
     batch_no: "BTH-26-0001",
@@ -122,7 +124,7 @@ export const bmrSections = [
 ];
 
 // ═══════════ QC RECORDS ═══════════
-export const qcRecords = [
+export const qcRecords: QCRecord[] = [
   {
     id: "qc-1",
     qc_no: "QC-26-0001",
@@ -134,8 +136,9 @@ export const qcRecords = [
     conclusion: "pass",
     status: "approved",
     submitted_by: "user-2",
+    submitted_at: "2026-01-13T10:30:00Z",
     approved_by: "user-3",
-    approved_at: "2026-01-14",
+    approved_at: "2026-01-14T09:00:00Z",
     is_locked: false,
     created_by: "user-2",
     created_at: "2026-01-13T10:30:00Z",
@@ -152,8 +155,9 @@ export const qcRecords = [
     conclusion: "pass",
     status: "approved",
     submitted_by: "user-2",
+    submitted_at: "2026-01-19T14:00:00Z",
     approved_by: "user-3",
-    approved_at: "2026-01-20",
+    approved_at: "2026-01-20T09:00:00Z",
     is_locked: true,
     created_by: "user-2",
     created_at: "2026-01-19T14:00:00Z",
@@ -161,11 +165,12 @@ export const qcRecords = [
   },
 ];
 
-export const qcTestResults = [
+// ═══════════ QC TEST RESULTS ═══════════
+export const qcTestResults: QCTestResult[] = [
   {
     id: "qtr-1",
     qc_record_id: "qc-1",
-    test_name: "Appearance",
+    parameter: "Appearance",
     specification: "White to off-white powder",
     result: "White powder",
     verdict: "pass",
@@ -174,7 +179,7 @@ export const qcTestResults = [
   {
     id: "qtr-2",
     qc_record_id: "qc-1",
-    test_name: "Assay",
+    parameter: "Assay",
     specification: "98-102%",
     result: "99.5%",
     verdict: "pass",
@@ -183,7 +188,7 @@ export const qcTestResults = [
 ];
 
 // ═══════════ FINISHED GOODS ═══════════
-export const finishedGoods = [
+export const finishedGoods: FinishedGoods[] = [
   {
     id: "fg-1",
     fg_no: "FG-26-0001",
@@ -195,7 +200,7 @@ export const finishedGoods = [
     pack_format: "2x15",
     total_units: 300,
     storage_location: "A1-B2-C3",
-    status: "qc_passed",
+    status: "qc_approved",
     entered_by: "user-4",
     entered_by_name: "Production Lead",
     created_at: "2026-01-21T09:00:00Z",
@@ -259,22 +264,22 @@ export const stabilityResults = [
 ];
 
 // ═══════════ GRN (GOODS RECEIVED NOTES) ═══════════
-export const grns = [
+export const grns: GRN[] = [
   {
     id: "grn-1",
     grn_no: "GRN-26-0001",
     batch_id: "batch-1",
-    supplier: "ChemSource Ltd",
-    received_date: "2026-01-10",
-    received_by: "user-5",
-    received_by_name: "Warehouse Manager",
-    quantity: 5000,
-    unit: "kg",
+    date_received: "2026-01-10",
+    supplier_name: "ChemSource Ltd",
     status: "approved",
+    submitted_by: "user-5",
+    submitted_at: "2026-01-10T08:00:00Z",
     approved_by: "user-1",
-    approval_date: "2026-01-11",
+    approved_at: "2026-01-11T09:00:00Z",
     is_locked: false,
+    created_by: "user-5",
     created_at: "2026-01-10T08:00:00Z",
+    updated_at: "2026-01-11T09:00:00Z",
   },
 ];
 
@@ -316,10 +321,12 @@ export const production = [
 ];
 
 // ═══════════ AUDIT LOG ═══════════
-export const auditLog = [
+export const auditLog: AuditLog[] = [
   {
     id: "audit-1",
     user_id: "user-2",
+    user_name: "John Smith",
+    user_role: "qc_lab",
     action: "CREATE",
     entity_type: "qc_records",
     entity_id: "qc-1",
@@ -331,6 +338,8 @@ export const auditLog = [
   {
     id: "audit-2",
     user_id: "user-3",
+    user_name: "Jane Doe",
+    user_role: "qa_regulatory",
     action: "APPROVE",
     entity_type: "qc_records",
     entity_id: "qc-1",

@@ -22,8 +22,8 @@ export async function POST(
 
   const newStatus = isApprove ? "approved" : "rejected";
   rec.status = newStatus;
-  rec.approved_by = isApprove ? user.id : null;
-  rec.approval_date = isApprove ? new Date().toISOString() : null;
+  rec.approved_by = isApprove ? user.id : undefined;
+  rec.approved_at = isApprove ? new Date().toISOString() : undefined;
   rec.is_locked = isApprove;
 
   if (isApprove && rec.batch_id) {

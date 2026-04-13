@@ -121,7 +121,7 @@ export default function DashboardClient({ user, batches, stats, notifications }:
                       <div style={{ display: "flex", gap: 5 }}>
                         <Btn size="sm" variant="blue" onClick={() => exportPDF("bmr",     b.id, b.batch_no)}>BMR</Btn>
                         <Btn size="sm" variant="ghost" onClick={() => exportPDF("coa",    b.id, b.batch_no)}
-                          style={{ color: "var(--purple)", background: "rgba(156,111,240,0.08)" } as React.CSSProperties}>CoA</Btn>
+                        >CoA</Btn>
                         <Btn size="sm" variant="secondary" onClick={() => exportPDF("release", b.id, b.batch_no)}>Rel.</Btn>
                       </div>
                     </td>

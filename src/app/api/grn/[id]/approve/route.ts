@@ -22,7 +22,7 @@ export async function POST(
 
   grn.status = "approved";
   grn.approved_by = user.id;
-  grn.approval_date = new Date().toISOString();
+  grn.approved_at = new Date().toISOString();
   grn.is_locked = true;
 
   // Update batch status

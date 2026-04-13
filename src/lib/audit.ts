@@ -18,12 +18,13 @@ export async function logAudit(entry: AuditEntry): Promise<void> {
     auditLog.push({
       id: `audit-${Date.now()}`,
       user_id: entry.user.id,
+      user_name: entry.user.full_name,
+      user_role: entry.user.role,
       action: entry.action,
       entity_type: entry.entityType,
       entity_id: entry.entityId,
-      entity_display: entry.entityDisplay || "",
-      old_values: entry.oldValues || null,
-      new_values: entry.newValues || null,
+      old_values: entry.oldValues || undefined,
+      new_values: entry.newValues || undefined,
       created_at: new Date().toISOString(),
     });
   } catch (err) {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthResponse } from "@/lib/auth";
+import { Batch } from "@/types";
 import { batches } from "@/lib/dummyData";
 
 export async function GET() {
@@ -20,29 +21,26 @@ export async function POST(req: NextRequest) {
 
   const body = await req.json();
   const year = new Date().getFullYear().toString().slice(-2);
-  const batchNo = `BTH-${year}${String((batches.length + 1).padStart(4, "0"))}`;
+  const batchNo = `BTH-${year}${String(batches.length + 1).padStart(4, "0")}`;
 
-  const newBatch = {
+  const newBatch: Batch = {
     id: `batch-${Date.now()}`,
     batch_no: batchNo,
-    product_name: body.product_name,
-    strength: body.strength || "",
-    dosage_form: body.dosage_form || "",
-    pack_size: body.pack_size || "",
-    manufacturing_date: body.manufacturing_date || new Date().toISOString().split("T")[0],
-    expiry_date: body.expiry_date || "",
-    status: "pending",
-    current_stage: "grn" as const,
-    grn_status: "pending" as const,
-    dispensing_status: "pending" as const,
-    bmr_status: "pending" as const,
-    qc_ip_status: "pending" as const,
-    qc_fr_status: "pending" as const,
-    production_status: "pending" as const,
-    fg_status: "pending" as const,
-    release_status: "pending" as const,
-    created_at: new Date().toISOString(),
+    product_name: (body.product_name || "") as string,
+    batch_size: body.batch_size || 1000,
+    batch_size_unit: body.batch_size_unit || "kg",
+    current_stage: "grn",
+    grn_status: "pending",
+    disp_status: "pending",
+    bmr_status: "pending",
+    qc_ip_status: "pending",
+    qc_fr_status: "pending",
+    prod_status: "pending",
+    fg_status: "pending",
+    release_status: "pending",
     created_by: user.id,
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
   };
 
   batches.push(newBatch);

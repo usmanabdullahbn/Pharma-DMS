@@ -26,7 +26,7 @@ export async function POST(
   if (isApprove && rec.batch_id) {
     const batch = batches.find((b) => b.id === rec.batch_id);
     if (batch) {
-      batch.dispensing_status = "done";
+      batch.disp_status = "done";
     }
   }
 
