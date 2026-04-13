@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAuth, isAuthResponse } from "@/lib/auth";
+import { QCRecord } from "@/types";
 import {
   qcRecords,
   qcTestResults,
@@ -44,21 +45,21 @@ export async function POST_QC(req: NextRequest) {
   const qcNo = `QC-${year}${String(qcRecords.length + 1).padStart(4, "0")}`;
   const conclusion = body.tests?.every((t: Record<string, string>) => t.verdict === "pass") ? "pass" : "fail";
 
-  const record = {
+  const record: QCRecord = {
     id: `qc-${Date.now()}`,
     qc_no: qcNo,
-    batch_id: body.batchId,
-    test_type: body.testType,
-    test_date: body.testDate,
-    analyst_name: body.analystName,
+    batch_id: body.batchId as string,
+    test_type: body.testType as string,
+    test_date: body.testDate as string,
+    analyst_name: body.analystName as string,
     analyst_id: user.id,
     conclusion: conclusion as any,
-    status: "submitted" as const,
+    status: "submitted",
     submitted_by: user.id,
     submitted_at: new Date().toISOString(),
-    approved_by: undefined as any,
-    approved_at: undefined as any,
-    approval_comment: undefined as any,
+    approved_by: undefined,
+    approved_at: undefined,
+    approval_comment: undefined,
     is_locked: false,
     created_by: user.id,
     created_at: new Date().toISOString(),
