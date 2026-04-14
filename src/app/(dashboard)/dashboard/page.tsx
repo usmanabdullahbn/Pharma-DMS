@@ -8,7 +8,7 @@ export default async function DashboardPage() {
   const user = dummyUser;
 
   // Fetch dashboard stats
-  const res = await fetch("http://localhost:3000/api/dashboard", { cache: "no-store" });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/dashboard`, { cache: "no-store" });
   const { data: dashData } = await res.json();
 
   const stats: DashboardStats = {
